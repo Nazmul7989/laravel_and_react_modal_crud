@@ -1,8 +1,21 @@
 import React, {Fragment,useState,useEffect} from 'react';
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
+import {Modal} from "react-bootstrap";
+import 'bootstrap/dist/css/bootstrap.min.css'
+
 
 
 const AllData = () => {
+
+
+    //modal
+    const [modalShow, setModalShow] = useState(false);
+
+    const handleClose = ()=>setModalShow(false)
+
+
+    //changing inner text of add and edit button
+    const [addNew,setAddNew] = useState(true)
 
     //add new student info
     const [info,setInfo] = useState({
@@ -16,6 +29,18 @@ const AllData = () => {
         error_list: []
     })
 
+    //click on add student button
+    const addStudent = ()=>{
+        setModalShow(true)
+        setAddNew(true)
+        setInfo({
+            name: '',
+            age: '',
+            class: ''
+        })
+    }
+
+
     //handle input value
     const onChangeHandler = (e)=>{
         let inputName = e.target.name;
@@ -25,13 +50,19 @@ const AllData = () => {
     }
 
 
-    //submit form data
-    const submitHandler = async (e)=>{
+
+
+    //add form data
+
+
+    const saveStudent = async (e)=>{
         e.preventDefault();
 
         const res = await axios.post('/api/student/store',info);
 
         if (res.data.status === 200){
+
+            setModalShow(false)
 
             const Toast = Swal.mixin({
                 toast: true,
@@ -45,10 +76,11 @@ const AllData = () => {
                 }
             })
 
-            Toast.fire({
+            await Toast.fire( {
                 icon: 'success',
                 title: 'Student Info Added successfully'
             })
+
 
             setInfo({
                 name: '',
@@ -63,6 +95,7 @@ const AllData = () => {
             });
 
         }
+
 
     }
 
@@ -84,11 +117,83 @@ const AllData = () => {
         })
     }
 
+    //clear form
+    const closBtnHandler = ()=>{
+
+        setModalShow(false)
+        setInfo({
+            name: '',
+            age: '',
+            class: ''
+        })
+
+    }
+
+
+
     //call the get info function when app is mounted
     useEffect(()=>{
         getStudents();
     },[]);
 
+
+
+    //edit student info
+    const editStudent = (student)=>{
+        setModalShow(true)
+        setAddNew(false);
+
+        setInfo({
+            name: student.name,
+            age: student.age,
+            class: student.class
+        })
+    }
+
+    //update student
+    const updateStudent = async (e)=>{
+
+        e.preventDefault();
+
+        const res = await axios.post('/api/student/update/',info);
+
+        if (res.data.status === 200){
+
+            setModalShow(false)
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000,
+                timerProgressBar: true,
+                didOpen: (toast) => {
+                    toast.addEventListener('mouseenter', Swal.stopTimer)
+                    toast.addEventListener('mouseleave', Swal.resumeTimer)
+                }
+            })
+
+            await Toast.fire( {
+                icon: 'success',
+                title: 'Student Info Updated successfully'
+            })
+
+
+            setInfo({
+                name: '',
+                age: '',
+                class: ''
+            })
+
+        }else {
+
+            setError({
+                error_list: res.data.validation_error
+            });
+
+        }
+
+    }
 
     //looping the fetched students info
     const studentData = students.infos.map((student)=>{
@@ -98,7 +203,7 @@ const AllData = () => {
             <td>{student.age}</td>
             <td>{student.class }</td>
             <td>
-                <button className="btn btn-success btn-sm ms">Edit</button>
+                <button onClick={(e)=>editStudent(student,e)} className="btn btn-success btn-sm ms">Edit</button>
                 <button  className="btn btn-danger btn-sm ms-2">Delete</button>
             </td>
         </tr>
@@ -111,8 +216,7 @@ const AllData = () => {
                 <div className="clearfix mb-3">
                     <h4 className="float-start">Students Information</h4>
 
-                    <button className="float-end btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#addInfo"
-                                data-bs-whatever="@mdo">Add new</button>
+                    <button onClick={addStudent} className="float-end btn btn-sm btn-success">Add new</button>
 
                 </div>
 
@@ -136,54 +240,57 @@ const AllData = () => {
 
         {/*  ========Modal ========*/}
 
-            <div className="modal fade" id="addInfo" tabIndex="-1" aria-hidden="true">
-                <div className="modal-dialog modal-dialog-centered">
-                    <div className="modal-content">
-                        <div className="modal-header">
-                            <h5 className="modal-title">Add New Student</h5>
-                            <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                        </div>
-                        <div className="modal-body">
+            <Modal show={modalShow} onHide={handleClose} centered>
 
-                            <form onSubmit={submitHandler}  method="post">
-                                <div className="row">
+                <Modal.Header closeButton>
+                    <Modal.Title>{addNew === true ? 'Add New Student': 'Edit Student'}</Modal.Title>
+                </Modal.Header>
 
-                                    <div className="col-12">
-                                        <div className="form-group mb-3">
-                                            <input type="text" name="name" onChange={onChangeHandler} value={info.name}  id="name" className="form-control" placeholder="Your Name"/>
-                                            <span className="text-danger">{error.error_list.name}</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="form-group mb-3">
-                                            <input type="text" name="age" id="age" onChange={onChangeHandler} value={info.age}  className="form-control" placeholder="Your Age"/>
-                                            <span className="text-danger">{error.error_list.age}</span>
-                                        </div>
-                                    </div>
-                                    <div className="col-12">
-                                        <div className="form-group mb-3">
-                                            <input type="text" name="class" id="class" onChange={onChangeHandler} value={info.class}  className="form-control" placeholder="Your Class"/>
-                                            <span className="text-danger">{error.error_list.class}</span>
-                                        </div>
-                                    </div>
+                <Modal.Body>
 
+                    <form method="post">
+                        <div className="row">
+
+                            <div className="col-12">
+                                <div className="form-group mb-3">
+                                    <input type="text" name="name" onChange={onChangeHandler} value={info.name}  id="name" className="form-control" placeholder="Your Name"/>
+                                    <span className="text-danger">{error.error_list.name}</span>
                                 </div>
-
-                                <div className="modal-footer">
-                                    <button type="button" className="btn btn-danger btn-sm"
-                                            data-bs-dismiss="modal">Close
-                                    </button>
-                                    <button type="submit"
-                                            className="btn btn-success btn-sm">Save
-                                    </button>
+                            </div>
+                            <div className="col-12">
+                                <div className="form-group mb-3">
+                                    <input type="text" name="age" id="age" onChange={onChangeHandler} value={info.age}  className="form-control" placeholder="Your Age"/>
+                                    <span className="text-danger">{error.error_list.age}</span>
                                 </div>
+                            </div>
+                            <div className="col-12">
+                                <div className="form-group mb-3">
+                                    <input type="text" name="class" id="class" onChange={onChangeHandler} value={info.class}  className="form-control" placeholder="Your Class"/>
+                                    <span className="text-danger">{error.error_list.class}</span>
+                                </div>
+                            </div>
 
-                            </form>
                         </div>
 
-                    </div>
-                </div>
-            </div>
+                        <Modal.Footer>
+                            <button type="button" className="btn btn-danger btn-sm" onClick={closBtnHandler}>Close</button>
+                            {addNew === true? (
+                                <button type="submit" onClick={saveStudent} className="btn btn-success btn-sm">
+                                    Save
+                                </button>
+                            ) : (
+                                <button type="submit" onClick={} className="btn btn-success btn-sm">
+                                   Update
+                                </button>
+                            )}
+
+                        </Modal.Footer>
+
+                    </form>
+                </Modal.Body>
+
+
+            </Modal>
 
         </Fragment>
     );
