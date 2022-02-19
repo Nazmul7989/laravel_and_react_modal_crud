@@ -42,38 +42,52 @@ const AllData = () => {
 
 
         {/*  ========Modal ========*/}
-        
+
             <div className="modal fade" id="addInfo" tabIndex="-1" aria-hidden="true">
-                <div className="modal-dialog">
+                <div className="modal-dialog modal-dialog-centered">
                     <div className="modal-content">
                         <div className="modal-header">
-                            <h5 className="modal-title">New message</h5>
+                            <h5 className="modal-title">Add New Student</h5>
                             <button type="button" className="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                         </div>
                         <div className="modal-body">
-                            <form>
-                                <div className="mb-3">
-                                    <label htmlFor="recipient-name"
-                                           className="col-form-label">Recipient:</label>
-                                    <input type="text" className="form-control"
-                                           id="recipient-name"/>
+
+                            <form onSubmit="" method="post">
+                                <div className="row">
+
+                                    <div className="col-12">
+                                        <div className="form-group mb-3">
+                                            <input type="text" name="name" onChange="" value="" id="name" className="form-control" placeholder="Your Name"/>
+                                            {/*<span className="text-danger">{this.state.error_list.name}</span>*/}
+                                        </div>
+                                    </div>
+                                    <div className="col-12">
+                                        <div className="form-group mb-3">
+                                            <input type="text" name="age" id="age" onChange="" value="" className="form-control" placeholder="Your Age"/>
+                                            {/*<span className="text-danger">{this.state.error_list.age}</span>*/}
+                                        </div>
+                                    </div>
+                                    <div className="col-12">
+                                        <div className="form-group mb-3">
+                                            <input type="text" name="class" id="class" onChange="" value="" className="form-control" placeholder="Your Class"/>
+                                            {/*<span className="text-danger">{this.state.error_list.class}</span>*/}
+                                        </div>
+                                    </div>
+
                                 </div>
-                                <div className="mb-3">
-                                    <label htmlFor="message-text"
-                                           className="col-form-label">Message:</label>
-                                    <textarea className="form-control"
-                                              id="message-text"></textarea>
+
+                                <div className="modal-footer">
+                                    <button type="button" className="btn btn-danger btn-sm"
+                                            data-bs-dismiss="modal">Close
+                                    </button>
+                                    <button type="submit"
+                                            className="btn btn-success btn-sm">Save
+                                    </button>
                                 </div>
+
                             </form>
                         </div>
-                        <div className="modal-footer">
-                            <button type="button" className="btn btn-secondary"
-                                    data-bs-dismiss="modal">Close
-                            </button>
-                            <button type="button"
-                                    className="btn btn-primary">Send message
-                            </button>
-                        </div>
+
                     </div>
                 </div>
             </div>
