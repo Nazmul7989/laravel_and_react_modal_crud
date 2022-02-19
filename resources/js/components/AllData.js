@@ -1,7 +1,79 @@
-import React, {Fragment} from 'react';
-import {Link} from "react-router-dom";
+import React, {Fragment,useState,useEffect} from 'react';
+
 
 const AllData = () => {
+
+    const [info,setInfo] = useState({
+        name: '',
+        age: '',
+        class: ''
+    })
+
+    const onChangeHandler = (e)=>{
+        let inputName = e.target.name;
+        let inputValue = e.target.value;
+
+        setInfo({
+            [inputName]: inputValue
+        })
+    }
+
+    const submitHandler = (e)=>{
+        e.preventDefault();
+
+        const res = axios.post('/api/student/store',info);
+
+        if (res.data === 200){
+
+            console.log(res.data)
+
+            setInfo({
+                name: '',
+                age: '',
+                class: ''
+            })
+
+        }else {
+
+        }
+
+    }
+
+
+    const [students,setStudents] = useState({
+        infos: []
+    });
+    
+    const getStudents = ()=>{
+          axios.get('/api/student').then((response)=>{
+            let studentsData = response.data.students;
+            setStudents({
+                infos: studentsData
+            });
+
+        }).catch((error)=>{
+            console.log(error);
+        })
+    }
+
+    useEffect(()=>{
+        getStudents();
+    },[]);
+
+
+    const studentData = students.infos.map((student)=>{
+        return <tr key={student.id}>
+            <td>{student.id}</td>
+            <td>{student.name}</td>
+            <td>{student.age}</td>
+            <td>{student.class }</td>
+            <td>
+                <button className="btn btn-success btn-sm ms">Edit</button>
+                <button  className="btn btn-danger btn-sm ms-2">Delete</button>
+            </td>
+        </tr>
+    });
+
     return (
         <Fragment>
 
@@ -25,16 +97,7 @@ const AllData = () => {
                         </tr>
                     </thead>
                     <tbody>
-                    <tr>
-                        <td>01</td>
-                        <td>Nazmul</td>
-                        <td>28</td>
-                        <td>MBA</td>
-                        <td>
-                            <Link to=""><button className="btn btn-success btn-sm ms">Edit</button></Link>
-                            <button  className="btn btn-danger btn-sm ms-2">Delete</button>
-                        </td>
-                    </tr>
+                    {studentData}
                     </tbody>
                 </table>
 
@@ -52,24 +115,24 @@ const AllData = () => {
                         </div>
                         <div className="modal-body">
 
-                            <form onSubmit="" method="post">
+                            <form onSubmit={submitHandler}  method="post">
                                 <div className="row">
 
                                     <div className="col-12">
                                         <div className="form-group mb-3">
-                                            <input type="text" name="name" onChange="" value="" id="name" className="form-control" placeholder="Your Name"/>
+                                            <input type="text" name="name" onChange={onChangeHandler} value={info.name}  id="name" className="form-control" placeholder="Your Name"/>
                                             {/*<span className="text-danger">{this.state.error_list.name}</span>*/}
                                         </div>
                                     </div>
                                     <div className="col-12">
                                         <div className="form-group mb-3">
-                                            <input type="text" name="age" id="age" onChange="" value="" className="form-control" placeholder="Your Age"/>
+                                            <input type="text" name="age" id="age" onChange={onChangeHandler} value={info.age}  className="form-control" placeholder="Your Age"/>
                                             {/*<span className="text-danger">{this.state.error_list.age}</span>*/}
                                         </div>
                                     </div>
                                     <div className="col-12">
                                         <div className="form-group mb-3">
-                                            <input type="text" name="class" id="class" onChange="" value="" className="form-control" placeholder="Your Class"/>
+                                            <input type="text" name="class" id="class" onChange={onChangeHandler} value={info.class}  className="form-control" placeholder="Your Class"/>
                                             {/*<span className="text-danger">{this.state.error_list.class}</span>*/}
                                         </div>
                                     </div>
