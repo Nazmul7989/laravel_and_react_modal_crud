@@ -6241,6 +6241,7 @@ function _iterableToArrayLimit(arr, i) { var _i = arr == null ? null : typeof Sy
 
 function _arrayWithHoles(arr) { if (Array.isArray(arr)) return arr; }
 
+ // import { useHistory } from "react-router-dom";
 
 
 
@@ -6324,10 +6325,11 @@ var AllData = function AllData() {
               res = _context.sent;
 
               if (!(res.data.status === 200)) {
-                _context.next = 13;
+                _context.next = 14;
                 break;
               }
 
+              getStudents();
               setModalShow(false);
               Toast = sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().mixin({
                 toast: true,
@@ -6340,13 +6342,13 @@ var AllData = function AllData() {
                   toast.addEventListener('mouseleave', (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().resumeTimer));
                 }
               });
-              _context.next = 9;
+              _context.next = 10;
               return Toast.fire({
                 icon: 'success',
                 title: 'Student Info Added successfully'
               });
 
-            case 9:
+            case 10:
               setInfo({
                 name: '',
                 age: '',
@@ -6355,16 +6357,18 @@ var AllData = function AllData() {
               });
               setError({
                 error_list: []
-              });
-              _context.next = 14;
+              }); // let history = useHistory();
+              // history.push('/');
+
+              _context.next = 15;
               break;
 
-            case 13:
+            case 14:
               setError({
                 error_list: res.data.validation_error
               });
 
-            case 14:
+            case 15:
             case "end":
               return _context.stop();
           }
@@ -6446,10 +6450,11 @@ var AllData = function AllData() {
               res = _context2.sent;
 
               if (!(res.data.status === 200)) {
-                _context2.next = 13;
+                _context2.next = 14;
                 break;
               }
 
+              getStudents();
               setModalShow(false);
               Toast = sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().mixin({
                 toast: true,
@@ -6462,13 +6467,13 @@ var AllData = function AllData() {
                   toast.addEventListener('mouseleave', (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().resumeTimer));
                 }
               });
-              _context2.next = 9;
+              _context2.next = 10;
               return Toast.fire({
                 icon: 'success',
                 title: 'Student Info Updated successfully'
               });
 
-            case 9:
+            case 10:
               setInfo({
                 name: '',
                 age: '',
@@ -6478,15 +6483,15 @@ var AllData = function AllData() {
               setError({
                 error_list: []
               });
-              _context2.next = 14;
+              _context2.next = 15;
               break;
 
-            case 13:
+            case 14:
               setError({
                 error_list: res.data.validation_error
               });
 
-            case 14:
+            case 15:
             case "end":
               return _context2.stop();
           }
@@ -6496,6 +6501,58 @@ var AllData = function AllData() {
 
     return function updateStudent(_x2) {
       return _ref2.apply(this, arguments);
+    };
+  }(); //delete student
+
+
+  var deleteStudent = /*#__PURE__*/function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/_babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().mark(function _callee3(e, id) {
+      var currenTargetButton, swalWithBootstrapButtons;
+      return _babel_runtime_regenerator__WEBPACK_IMPORTED_MODULE_0___default().wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              currenTargetButton = e.currentTarget;
+              swalWithBootstrapButtons = sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().mixin({
+                customClass: {
+                  confirmButton: 'btn btn-success',
+                  cancelButton: 'btn btn-danger'
+                },
+                buttonsStyling: false
+              });
+              swalWithBootstrapButtons.fire({
+                title: 'Are you sure?',
+                text: "You won't be able to revert this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Yes, delete it!',
+                cancelButtonText: 'No, cancel!',
+                reverseButtons: true
+              }).then(function (result) {
+                if (result.isConfirmed) {
+                  axios["delete"]('/api/student/delete/' + id).then(function (response) {
+                    currenTargetButton.closest('tr').remove();
+                  })["catch"](function (error) {
+                    console.log(error);
+                  });
+                  swalWithBootstrapButtons.fire('Deleted!', 'Student Info Deleted Successfully.', 'success');
+                } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === (sweetalert2__WEBPACK_IMPORTED_MODULE_2___default().DismissReason.cancel)) {
+                  swalWithBootstrapButtons.fire('Cancelled', 'Your imaginary file is safe )', 'error');
+                }
+              });
+
+            case 3:
+            case "end":
+              return _context3.stop();
+          }
+        }
+      }, _callee3);
+    }));
+
+    return function deleteStudent(_x3, _x4) {
+      return _ref3.apply(this, arguments);
     };
   }(); //looping the fetched students info
 
@@ -6518,6 +6575,9 @@ var AllData = function AllData() {
           className: "btn btn-success btn-sm ms",
           children: "Edit"
         }), /*#__PURE__*/(0,react_jsx_runtime__WEBPACK_IMPORTED_MODULE_4__.jsx)("button", {
+          onClick: function onClick(e) {
+            return deleteStudent(e, student.id);
+          },
           className: "btn btn-danger btn-sm ms-2",
           children: "Delete"
         })]

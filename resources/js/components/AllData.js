@@ -1,4 +1,5 @@
 import React, {Fragment,useState,useEffect} from 'react';
+// import { useHistory } from "react-router-dom";
 import Swal from 'sweetalert2';
 import {Modal} from "react-bootstrap";
 import 'bootstrap/dist/css/bootstrap.min.css'
@@ -67,6 +68,8 @@ const AllData = () => {
 
         if (res.data.status === 200){
 
+            getStudents();
+
             setModalShow(false)
 
             const Toast = Swal.mixin({
@@ -96,6 +99,10 @@ const AllData = () => {
             setError({
                 error_list: []
             });
+
+
+            // let history = useHistory();
+            // history.push('/');
 
         }else {
 
@@ -176,6 +183,7 @@ const AllData = () => {
 
         if (res.data.status === 200){
 
+            getStudents();
             setModalShow(false)
 
             const Toast = Swal.mixin({
@@ -216,6 +224,57 @@ const AllData = () => {
 
     }
 
+    //delete student
+    const deleteStudent = async (e,id)=>{
+
+        const currenTargetButton = e.currentTarget;
+
+        const swalWithBootstrapButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'btn btn-success',
+                cancelButton: 'btn btn-danger'
+            },
+            buttonsStyling: false
+        })
+
+        swalWithBootstrapButtons.fire({
+            title: 'Are you sure?',
+            text: "You won't be able to revert this!",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonText: 'Yes, delete it!',
+            cancelButtonText: 'No, cancel!',
+            reverseButtons: true
+        }).then((result) => {
+            if (result.isConfirmed) {
+
+                axios.delete('/api/student/delete/'+id).then((response)=>{
+
+                    currenTargetButton.closest('tr').remove();
+
+                }).catch((error)=>{
+                    console.log(error);
+                })
+
+                swalWithBootstrapButtons.fire(
+                    'Deleted!',
+                    'Student Info Deleted Successfully.',
+                    'success'
+                )
+            } else if (
+                /* Read more about handling dismissals below */
+                result.dismiss === Swal.DismissReason.cancel
+            ) {
+                swalWithBootstrapButtons.fire(
+                    'Cancelled',
+                    'Your imaginary file is safe )',
+                    'error'
+                )
+            }
+        })
+
+    }
+
     //looping the fetched students info
     const studentData = students.infos.map((student)=>{
         return <tr key={student.id}>
@@ -225,7 +284,7 @@ const AllData = () => {
             <td>{student.class }</td>
             <td>
                 <button onClick={(e)=>editStudent(student,e)} className="btn btn-success btn-sm ms">Edit</button>
-                <button  className="btn btn-danger btn-sm ms-2">Delete</button>
+                <button onClick={(e)=>deleteStudent(e,student.id)}  className="btn btn-danger btn-sm ms-2">Delete</button>
             </td>
         </tr>
     });
