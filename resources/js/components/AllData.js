@@ -22,6 +22,7 @@ const AllData = () => {
         name: '',
         age: '',
         class: '',
+        id: ''
     })
 
     //validation error
@@ -36,8 +37,12 @@ const AllData = () => {
         setInfo({
             name: '',
             age: '',
-            class: ''
+            class: '',
+            id: ''
         })
+        setError({
+            error_list: []
+        });
     }
 
 
@@ -85,8 +90,12 @@ const AllData = () => {
             setInfo({
                 name: '',
                 age: '',
-                class: ''
+                class: '',
+                id: ''
             })
+            setError({
+                error_list: []
+            });
 
         }else {
 
@@ -124,8 +133,12 @@ const AllData = () => {
         setInfo({
             name: '',
             age: '',
-            class: ''
+            class: '',
+            id: ''
         })
+        setError({
+            error_list: []
+        });
 
     }
 
@@ -146,8 +159,12 @@ const AllData = () => {
         setInfo({
             name: student.name,
             age: student.age,
-            class: student.class
+            class: student.class,
+            id: student.id
         })
+        setError({
+            error_list: []
+        });
     }
 
     //update student
@@ -155,7 +172,7 @@ const AllData = () => {
 
         e.preventDefault();
 
-        const res = await axios.post('/api/student/update/',info);
+        const res = await axios.put('/api/student/update/'+ info.id,info);
 
         if (res.data.status === 200){
 
@@ -182,8 +199,12 @@ const AllData = () => {
             setInfo({
                 name: '',
                 age: '',
-                class: ''
+                class: '',
+                id: ''
             })
+            setError({
+                error_list: []
+            });
 
         }else {
 
@@ -279,7 +300,7 @@ const AllData = () => {
                                     Save
                                 </button>
                             ) : (
-                                <button type="submit" onClick={} className="btn btn-success btn-sm">
+                                <button type="submit" onClick={updateStudent} className="btn btn-success btn-sm">
                                    Update
                                 </button>
                             )}
